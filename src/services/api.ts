@@ -34,16 +34,24 @@ export interface AtualizarResponse {
 }
 
 class ApiService {
-  private async fetchWithTimeout(url: string, timeout = 10000): Promise<Response> {
+  private async fetchWithTimeout(url: string, timeout = 15000): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     
     try {
-      const response = await fetch(url, { signal: controller.signal });
+      const response = await fetch(url, { 
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
       clearTimeout(timeoutId);
       return response;
     } catch (error) {
       clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Tempo limite de conexão excedido');
+      }
       throw error;
     }
   }
