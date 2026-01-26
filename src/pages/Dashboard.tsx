@@ -1,20 +1,39 @@
 import { useResultados } from "@/hooks/useResultados";
 import { LotteryBall } from "@/components/LotteryBall";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { TrendingUp, TrendingDown, Calendar, Hash } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, Hash, RefreshCw, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 
 export default function Dashboard() {
-  const { data, isLoading, error } = useResultados();
+  const { data, isLoading, error, refetch, isFetching } = useResultados();
 
   if (error) {
     return (
       <AppLayout>
-        <div className="flex items-center justify-center h-full">
-          <Card className="p-6">
-            <p className="text-destructive">Erro ao carregar dados. Tente novamente.</p>
+        <div className="flex items-center justify-center h-full min-h-[400px]">
+          <Card className="p-8 max-w-md text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Erro ao carregar dados</h3>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  Não foi possível conectar ao servidor. Verifique sua conexão ou tente novamente.
+                </p>
+              </div>
+              <Button 
+                onClick={() => refetch()} 
+                disabled={isFetching}
+                className="gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+                Tentar Novamente
+              </Button>
+            </div>
           </Card>
         </div>
       </AppLayout>
